@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Target Shooter</title>
+  </head>
+  <body>
+    <!-- Three.js canvas is appended here by GameEngine. -->
+    <div id="app"></div>
+
+    <div id="ui-root">
+      <!-- In-game HUD (visible only while playing) -->
+      <div id="hud" hidden>
+        <div class="hud-bar">
+          <div class="hud-stat">
+            <span class="hud-label">SCORE</span>
+            <span id="score" class="hud-value">0</span>
+          </div>
+          <div class="hud-stat hud-stat--health">
+            <span class="hud-label">HEALTH <span id="health-text">100</span></span>
+            <div id="health-track"><div id="health-fill"></div></div>
+          </div>
+          <button id="btn-exit-hud" type="button" aria-label="Quit to menu">✕</button>
+        </div>
+        <div id="crosshair" aria-hidden="true"></div>
+        <div id="damage-vignette" aria-hidden="true"></div>
+        <div id="hint" aria-live="polite"></div>
+      </div>
+
+      <!-- Absolute-centered loading / start / game-over screen -->
+      <div id="screen" role="dialog" aria-live="polite">
+        <div class="panel">
+          <h1 id="screen-title">Target Shooter</h1>
+          <div id="spinner" class="spinner" aria-hidden="true"></div>
+          <p id="screen-message">Loading…</p>
+          <button id="btn-start" type="button" hidden>Start</button>
+          <button id="btn-exit" type="button" class="secondary" hidden>Main menu</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

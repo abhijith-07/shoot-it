@@ -1,0 +1,88 @@
+:root {
+  --accent: #5ef2ff;
+  --danger: #ff3b5c;
+  --ink: #eaf6ff;
+  --panel: rgba(8, 12, 22, 0.82);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #05070d; color: var(--ink); }
+body { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: none; }
+
+#app { position: fixed; inset: 0; }
+#app canvas { display: block; width: 100%; height: 100%; }
+
+/* UI layer. Transparent and click-through; only buttons/screens take input. */
+#ui-root { position: fixed; inset: 0; pointer-events: none; background: transparent; }
+#ui-root button { pointer-events: auto; }
+
+/* ---------- HUD ---------- */
+#hud { position: absolute; inset: 0; }
+.hud-bar {
+  position: absolute; left: 0; right: 0; top: 0;
+  display: flex; align-items: center; gap: 16px;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+}
+.hud-stat { display: flex; flex-direction: column; gap: 4px; min-width: 84px; }
+.hud-stat--health { flex: 1; }
+.hud-label { font-size: 11px; letter-spacing: 0.12em; opacity: 0.8; }
+.hud-value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#health-track { height: 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.18); overflow: hidden; }
+#health-fill { height: 100%; width: 100%; background: var(--accent); transition: width 0.2s ease, background 0.2s ease; }
+#health-fill.is-low { background: var(--danger); }
+#btn-exit-hud {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.45); color: var(--ink); font-size: 18px;
+}
+
+/* Crosshair: the fire direction is exactly the camera's forward vector = this point. */
+#crosshair { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+#crosshair::before, #crosshair::after { content: ''; position: absolute; background: var(--accent); }
+#crosshair::before { left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px;
+  -webkit-mask: linear-gradient(#000 0 35%, transparent 35% 65%, #000 65%); mask: linear-gradient(#000 0 35%, transparent 35% 65%, #000 65%); }
+#crosshair::after { top: 50%; left: 0; right: 0; height: 2px; margin-top: -1px;
+  -webkit-mask: linear-gradient(90deg, #000 0 35%, transparent 35% 65%, #000 65%); mask: linear-gradient(90deg, #000 0 35%, transparent 35% 65%, #000 65%); }
+#crosshair.is-hit { animation: hit 0.25s ease-out; }
+@keyframes hit {
+  0% { transform: translate(-50%, -50%) scale(1.5) rotate(45deg); filter: hue-rotate(120deg) brightness(2); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+#damage-vignette { position: absolute; inset: 0; opacity: 0; box-shadow: inset 0 0 120px 30px rgba(255, 30, 60, 0.85); }
+#damage-vignette.is-hurt { animation: hurt 0.45s ease-out; }
+@keyframes hurt { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- Start / loading / game-over screen ---------- */
+#screen {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(circle at 50% 40%, rgba(20, 40, 70, 0.9), rgba(3, 5, 10, 0.97));
+  pointer-events: auto;
+}
+.panel {
+  width: min(420px, 100%); text-align: center; padding: 28px 24px; border-radius: 20px;
+  background: var(--panel); border: 1px solid rgba(94, 242, 255, 0.25);
+}
+h1 { margin: 0 0 12px; font-size: 28px; letter-spacing: 0.04em; }
+#screen-message { margin: 0 0 20px; line-height: 1.5; opacity: 0.9; }
+#screen-message.is-error { color: #ff8da1; opacity: 1; }
+button {
+  display: block; width: 100%; padding: 14px 18px; margin-top: 10px; border: 0; border-radius: 12px;
+  font-size: 16px; font-weight: 700; color: #04121a; background: var(--accent);
+}
+button:disabled { opacity: 0.4; }
+button.secondary { background: transparent; color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.35); }
+.spinner {
+  width: 28px; height: 28px; margin: 0 auto 14px; border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2); border-top-color: var(--accent); animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast shown briefly at the start of a round */
+#hint {
+  position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+  transform: translateX(-50%); max-width: 90%; padding: 8px 16px; border-radius: 20px;
+  background: rgba(0, 0, 0, 0.6); font-size: 14px; text-align: center;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+#hint.visible { opacity: 1; }
